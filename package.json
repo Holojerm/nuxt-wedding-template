@@ -1,0 +1,40 @@
+{
+  "name": "nuxt-wedding-template",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:remote": "wrangler d1 migrations apply nuxt-wedding-template-db --remote",
+    "ci": "bun run typecheck && bun run test && bun run build",
+    "deploy": "bun run ci && bun run db:migrate:remote && wrangler --cwd .output deploy"
+  },
+  "dependencies": {
+    "@nuxt/image": "^2.1.0",
+    "@nuxt/ui": "^4.10.0",
+    "@nuxthub/core": "^0.10.8",
+    "drizzle-orm": "^0.45.2",
+    "nuxt": "^4.5.2",
+    "tailwindcss": "^4.3.3",
+    "uqr": "^0.1.3",
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.23.0",
+    "@cloudflare/workers-types": "^5.20260821.1",
+    "@libsql/client": "^0.17.4",
+    "@types/node": "^26.6.6",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.3.11",
+    "wrangler": "^4.152.0"
+  }
+}

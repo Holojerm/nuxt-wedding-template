@@ -1,0 +1,10 @@
+/* The theme itself lives in layers/wedding/app/assets/css/wedding.css. */
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+@utility min-touch {
+  @media (pointer: coarse) {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}

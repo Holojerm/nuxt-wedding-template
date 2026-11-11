@@ -1,0 +1,26 @@
+name = "nuxt-wedding-template"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+# A [[routes]] entry flips wrangler's default to false; keep workers.dev on.
+workers_dev = true
+
+# The ids below belong to the public demo. Create your own (README.md › Deploy)
+# and replace them.
+[[d1_databases]]
+binding = "DB"
+database_name = "nuxt-wedding-template-db"
+database_id = "f9379b05-a94e-4763-bb58-55ae33278498"
+migrations_dir = "./server/db/migrations"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "53969ae2be514d779b4921e0dda6abf0"
+
+# Your own domain, once its zone is on the same Cloudflare account. Add the
+# same hostname to `hosts` in layers/wedding/weddings/<slug>.ts.
+# [[routes]]
+# pattern = "ourwedding.example.com"
+# custom_domain = true
+
+[observability]
+enabled = true

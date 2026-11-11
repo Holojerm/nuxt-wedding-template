@@ -1,0 +1,12 @@
+.nuxt
+.output
+.data
+.env
+.env.*
+!.env.example
+dist
+node_modules
+.wrangler/
+.DS_Store
+*.log
+coverage

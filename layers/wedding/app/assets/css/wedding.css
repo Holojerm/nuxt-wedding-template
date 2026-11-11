@@ -1,0 +1,152 @@
+/* The wedding token layer, compiled by hand from layers/wedding/DESIGN.md.
+ *
+ * Every rule is scoped to `:root[data-wedding-theme]`, which only the wedding
+ * layout sets, so none of it reaches a host app's own pages. It re-points the same
+ * NuxtUI variables main.css sets, so every `text-primary`/`bg-elevated` in the
+ * wedding components resolves to the couple's palette with no new utilities.
+ *
+ * Colors are OKLCH (the space Tailwind v4's own palette uses). WCAG contrast,
+ * measured on each theme's paper (neutral-50):
+ *   catalogue    text 12.3 · muted 5.8 (5.4 on elevated) · dimmed 4.6 · primary 7.3 · white on primary 7.9
+ *   letterpress  text 12.2 · muted 5.8 (5.4 on elevated) · dimmed 4.6 · primary 8.3 · white on primary 8.9
+ * Wedding pages force light mode (DESIGN.md › Color mode), so there is no dark set. */
+
+/* ── Catalogue: a museum wedding ──────────────────────────────────────────
+ * Brick and marble from the building, park green from the garden across the
+ * street, gallery-label black. */
+:root[data-wedding-theme='catalogue'] {
+  --ui-color-primary-50: oklch(0.97 0.012 35);
+  --ui-color-primary-100: oklch(0.935 0.03 35);
+  --ui-color-primary-200: oklch(0.87 0.06 35);
+  --ui-color-primary-300: oklch(0.78 0.095 35);
+  --ui-color-primary-400: oklch(0.68 0.125 35);
+  --ui-color-primary-500: oklch(0.59 0.135 35);
+  --ui-color-primary-600: oklch(0.52 0.13 35);
+  --ui-color-primary-700: oklch(0.45 0.115 35);
+  --ui-color-primary-800: oklch(0.38 0.095 35);
+  --ui-color-primary-900: oklch(0.32 0.075 35);
+  --ui-color-primary-950: oklch(0.22 0.05 35);
+
+  --ui-color-secondary-50: oklch(0.97 0.015 155);
+  --ui-color-secondary-100: oklch(0.935 0.03 155);
+  --ui-color-secondary-200: oklch(0.87 0.05 155);
+  --ui-color-secondary-300: oklch(0.78 0.07 155);
+  --ui-color-secondary-400: oklch(0.68 0.08 155);
+  --ui-color-secondary-500: oklch(0.58 0.08 155);
+  --ui-color-secondary-600: oklch(0.5 0.075 155);
+  --ui-color-secondary-700: oklch(0.43 0.065 155);
+  --ui-color-secondary-800: oklch(0.36 0.055 155);
+  --ui-color-secondary-900: oklch(0.3 0.045 155);
+  --ui-color-secondary-950: oklch(0.21 0.03 155);
+
+  --ui-color-neutral-50: oklch(0.975 0.008 85);
+  --ui-color-neutral-100: oklch(0.95 0.01 85);
+  --ui-color-neutral-200: oklch(0.9 0.012 80);
+  --ui-color-neutral-300: oklch(0.82 0.012 75);
+  --ui-color-neutral-400: oklch(0.7 0.012 70);
+  --ui-color-neutral-500: oklch(0.545 0.012 65);
+  --ui-color-neutral-600: oklch(0.49 0.012 60);
+  --ui-color-neutral-700: oklch(0.4 0.01 60);
+  --ui-color-neutral-800: oklch(0.31 0.008 60);
+  --ui-color-neutral-900: oklch(0.24 0.006 60);
+  --ui-color-neutral-950: oklch(0.17 0.005 60);
+
+  --font-display: 'Cormorant Garamond', ui-serif, Georgia, serif;
+  --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+  --ui-radius: 0.125rem;
+}
+
+/* ── Letterpress: venue-neutral ───────────────────────────────────────────
+ * Cream stock, ink blue, sage. Venue-neutral until the venue is chosen. */
+:root[data-wedding-theme='letterpress'] {
+  --ui-color-primary-50: oklch(0.97 0.012 255);
+  --ui-color-primary-100: oklch(0.935 0.025 255);
+  --ui-color-primary-200: oklch(0.87 0.05 255);
+  --ui-color-primary-300: oklch(0.78 0.08 255);
+  --ui-color-primary-400: oklch(0.67 0.1 255);
+  --ui-color-primary-500: oklch(0.57 0.11 255);
+  --ui-color-primary-600: oklch(0.49 0.11 255);
+  --ui-color-primary-700: oklch(0.41 0.1 255);
+  --ui-color-primary-800: oklch(0.34 0.085 255);
+  --ui-color-primary-900: oklch(0.28 0.07 255);
+  --ui-color-primary-950: oklch(0.2 0.05 255);
+
+  --ui-color-secondary-50: oklch(0.97 0.012 135);
+  --ui-color-secondary-100: oklch(0.935 0.025 135);
+  --ui-color-secondary-200: oklch(0.87 0.04 135);
+  --ui-color-secondary-300: oklch(0.78 0.055 135);
+  --ui-color-secondary-400: oklch(0.68 0.06 135);
+  --ui-color-secondary-500: oklch(0.58 0.06 135);
+  --ui-color-secondary-600: oklch(0.5 0.055 135);
+  --ui-color-secondary-700: oklch(0.43 0.05 135);
+  --ui-color-secondary-800: oklch(0.36 0.042 135);
+  --ui-color-secondary-900: oklch(0.3 0.035 135);
+  --ui-color-secondary-950: oklch(0.21 0.025 135);
+
+  --ui-color-neutral-50: oklch(0.975 0.012 90);
+  --ui-color-neutral-100: oklch(0.95 0.015 90);
+  --ui-color-neutral-200: oklch(0.9 0.016 88);
+  --ui-color-neutral-300: oklch(0.82 0.015 85);
+  --ui-color-neutral-400: oklch(0.7 0.014 80);
+  --ui-color-neutral-500: oklch(0.545 0.013 75);
+  --ui-color-neutral-600: oklch(0.49 0.012 260);
+  --ui-color-neutral-700: oklch(0.4 0.012 260);
+  --ui-color-neutral-800: oklch(0.31 0.012 260);
+  --ui-color-neutral-900: oklch(0.24 0.012 260);
+  --ui-color-neutral-950: oklch(0.17 0.012 260);
+
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --ui-radius: 0.375rem;
+}
+
+/* Shared by every theme. Paper, never white; text one step darker than
+ * NuxtUI's default because guests read on phones outdoors. */
+:root[data-wedding-theme] {
+  --ui-primary: var(--ui-color-primary-700);
+  --ui-secondary: var(--ui-color-secondary-700);
+  --ui-bg: var(--ui-color-neutral-50);
+  --ui-bg-muted: var(--ui-color-neutral-100);
+  --ui-bg-elevated: var(--ui-color-neutral-100);
+  --ui-bg-accented: var(--ui-color-neutral-200);
+  --ui-border: var(--ui-color-neutral-300);
+  --ui-border-muted: var(--ui-color-neutral-200);
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-600);
+  --ui-text-toned: var(--ui-color-neutral-700);
+  --ui-text: var(--ui-color-neutral-800);
+  --ui-text-highlighted: var(--ui-color-neutral-950);
+  --ui-container: 64rem;
+  /* DESIGN.md › Type: 18px body for a multi-generational guest list. */
+  font-size: 112.5%;
+}
+
+/* Explicit font-family declarations so @nuxt/fonts finds and self-hosts all
+ * four families; it does not read them out of custom properties. */
+:root[data-wedding-theme='catalogue'] body {
+  font-family: 'Jost', ui-sans-serif, system-ui, sans-serif;
+}
+:root[data-wedding-theme='catalogue'] :is(h1, h2, h3, .wedding-display) {
+  font-family: 'Cormorant Garamond', ui-serif, Georgia, serif;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+:root[data-wedding-theme='letterpress'] body {
+  font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+}
+:root[data-wedding-theme='letterpress'] :is(h1, h2, h3, .wedding-display) {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Avery 5160 address labels (/labels). A named page keeps these margins off
+ * every other printout: 0.5in top and bottom, 3/16in left, and three 2.625in
+ * columns 0.125in apart fill the 8.5in width exactly. */
+@page wedding-labels {
+  size: letter;
+  margin: 0.5in 0 0.5in 0.1875in;
+}
+.wedding-labels {
+  page: wedding-labels;
+}
