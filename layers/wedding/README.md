@@ -53,6 +53,15 @@ API, sent as the couple (`"Maya & Theo" <address>`) with reply-to set to the wed
 With neither, nothing sends and `/manage` says so. Who hears about replies is the config's
 `rsvp.notifyEmails`.
 
+## Letters that open later (optional)
+
+Set `letters: { url, opensOn }` in a wedding's file to print cards that ask guests to write
+the couple a letter, for example a [Dear Mantel](https://dearmantel.com) write link whose
+letters stay sealed until the first anniversary. `/qr-sheet?link=letters` prints the link as a
+QR code, nine cards to a page, and a "Letter cards" button appears on `/manage`. The site only
+prints the address: it never sees a letter. Paste the whole address, including the part after
+the `#`, which the letter service uses to check its own key.
+
 ## Vendoring into another repo
 
 The layer is self-contained, so an existing Nuxt app can serve wedding sites next to its own

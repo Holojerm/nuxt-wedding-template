@@ -104,6 +104,17 @@ export interface WeddingConfig {
     notifyEmails: string[]
   }
   /**
+   * Optional: a link where guests can write the couple a letter that opens
+   * later, such as a Dear Mantel write link. The site only prints it as a QR
+   * card (`/qr-sheet?link=letters`); it never reads or stores a letter. Paste
+   * the whole address, including anything after a `#`.
+   */
+  letters?: {
+    url: string
+    /** ISO `YYYY-MM-DD`: the day the letters open, printed on the card. */
+    opensOn?: string
+  }
+  /**
    * SHA-256 (hex) of the couple's admin token. The token itself lives in
    * a password manager; a hash of 32 random bytes is safe to commit. Empty disables /manage.
    */
