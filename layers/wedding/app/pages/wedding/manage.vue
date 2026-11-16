@@ -292,6 +292,15 @@ const shortDate = (d: Date | string) =>
             >
               RSVP QR sheet
             </UButton>
+            <UButton
+              v-if="wedding.letters"
+              to="/qr-sheet?link=letters"
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-mail"
+            >
+              Letter cards
+            </UButton>
             <UButton to="/labels" color="neutral" variant="outline" icon="i-lucide-tags">
               Address labels
             </UButton>
