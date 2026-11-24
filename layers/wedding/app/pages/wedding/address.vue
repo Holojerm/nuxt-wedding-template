@@ -8,6 +8,7 @@ import type { InvitationView, MailingAddress } from '../../../shared/utils/weddi
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
 useSeo({
   title: `Your address · ${wedding.title}`,
   titleMode: 'exact',
@@ -28,7 +29,7 @@ async function lookup(body: { name: string } | { code: string }) {
   looking.value = true
   problem.value = null
   try {
-    const res = await $fetch<{ invitations: InvitationView[] }>('/api/wedding/lookup', {
+    const res = await $fetch<{ invitations: InvitationView[] }>(url('/api/wedding/lookup'), {
       method: 'POST',
       body,
     })
@@ -65,7 +66,7 @@ async function save() {
   saving.value = true
   problem.value = null
   try {
-    await $fetch('/api/wedding/address', {
+    await $fetch(url('/api/wedding/address'), {
       method: 'POST',
       body: { householdId: invitation.value.household.id, address, email: email.value.trim() },
     })

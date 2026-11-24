@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const due = (await householdsToRemind(db, wedding.slug)).filter(
     (h) => !h.remindedAt || now - new Date(h.remindedAt).getTime() > COOLDOWN_MS,
   )
-  const origin = getRequestURL(event).origin
+  const origin = weddingOrigin(event)
   const mails = due.map((h) => reminderMail(wedding, h, origin)).filter((m) => m !== null)
   const sent = await sendWeddingMail(wedding, mails)
   if (sent > 0)

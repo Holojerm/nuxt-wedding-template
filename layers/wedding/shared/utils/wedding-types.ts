@@ -105,15 +105,22 @@ export interface WeddingConfig {
   }
   /**
    * Optional: a link where guests can write the couple a letter that opens
-   * later, such as a Dear Mantel write link. The site only prints it as a QR
-   * card (`/qr-sheet?link=letters`); it never reads or stores a letter. Paste
-   * the whole address, including anything after a `#`.
+   * later, such as a Dear Mantel write link. The site prints it as a QR card
+   * (`/qr-sheet?link=letters`); it never reads or stores a letter. Paste the
+   * whole address, including anything after a `#`.
    */
   letters?: {
     url: string
     /** ISO `YYYY-MM-DD`: the day the letters open, printed on the card. */
     opensOn?: string
+    /**
+     * Also show the link on the home page and after a guest replies. Off by
+     * default: anyone who can open the site can then write a letter.
+     */
+    showOnSite?: boolean
   }
+  /** Optional links under the footer, such as a credit or a way to report the site. */
+  footerLinks?: { label: string; url: string }[]
   /**
    * SHA-256 (hex) of the couple's admin token. The token itself lives in
    * a password manager; a hash of 32 random bytes is safe to commit. Empty disables /manage.

@@ -7,6 +7,7 @@ import type { InvitationView } from '../../../shared/utils/wedding-types'
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
 
 useSeo({
   title: `RSVP · ${wedding.title}`,
@@ -36,7 +37,7 @@ async function lookup(body: { name: string } | { code: string }) {
   error.value = null
   try {
     const res = await $fetch<{ closed: boolean; invitations: InvitationView[] }>(
-      '/api/wedding/lookup',
+      url('/api/wedding/lookup'),
       { method: 'POST', body },
     )
     closed.value = res.closed
@@ -238,7 +239,7 @@ function answerFor(g: InvitationView['household']['guests'][number], eventId: st
       </div>
       <UButton
         v-if="invitation.household.respondedAt"
-        :to="`/wedding.ics?h=${invitation.household.id}`"
+        :to="url(`/wedding.ics?h=${invitation.household.id}`)"
         external
         size="xl"
         color="neutral"
@@ -258,7 +259,12 @@ function answerFor(g: InvitationView['household']['guests'][number], eventId: st
       >
         Change answers
       </UButton>
-      <UButton to="/schedule" size="xl" variant="link">See the schedule</UButton>
+      <WeddingLettersCard
+        v-if="wedding.letters?.showOnSite && invitation.household.respondedAt"
+        :url="wedding.letters.url"
+        :opens-on="wedding.letters.opensOn"
+      />
+      <UButton :to="url('/schedule')" size="xl" variant="link">See the schedule</UButton>
     </div>
   </section>
 </template>

@@ -10,6 +10,7 @@ const props = defineProps<{
   events: { id: string; name: string; isPublic: boolean }[]
 }>()
 const emit = defineEmits<{ saved: []; cancel: [] }>()
+const url = useWeddingUrl()
 
 interface GuestDraft {
   id?: string
@@ -41,7 +42,7 @@ async function save() {
   problem.value = null
   saving.value = true
   try {
-    await $fetch(`/api/wedding/manage/households/${props.household.id}`, {
+    await $fetch(url(`/api/wedding/manage/households/${props.household.id}`), {
       method: 'PATCH',
       body: {
         label: label.value,

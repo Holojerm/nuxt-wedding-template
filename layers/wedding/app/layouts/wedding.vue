@@ -3,6 +3,7 @@
 // header with RSVP always one tap away, and a draft ribbon while the config
 // still holds placeholder copy.
 const wedding = useWedding()
+const url = useWeddingUrl()
 
 useHead({
   htmlAttrs: { 'data-wedding-theme': wedding.theme, lang: 'en' },
@@ -35,7 +36,7 @@ const links = [
   ...(wedding.guide ? [{ label: 'Nearby', to: '/guide' }] : []),
   { label: 'Registry', to: '/registry' },
   { label: 'FAQ', to: '/faq' },
-]
+].map((link) => ({ ...link, to: url(link.to) }))
 
 const menuOpen = ref(false)
 const route = useRoute()
@@ -70,7 +71,7 @@ const dateLine = computed(() => (wedding.date ? formatPlainDate(wedding.date) : 
         class="mx-auto flex max-w-(--ui-container) items-center justify-between gap-4 px-4 py-4 sm:px-6"
       >
         <NuxtLink
-          to="/"
+          :to="url('/')"
           class="wedding-display rounded-sm text-2xl text-highlighted focus-visible:ring-2 focus-visible:ring-primary"
         >
           {{ wedding.title }}
@@ -86,11 +87,11 @@ const dateLine = computed(() => (wedding.date ? formatPlainDate(wedding.date) : 
           >
             {{ link.label }}
           </NuxtLink>
-          <UButton to="/rsvp" size="md">RSVP</UButton>
+          <UButton :to="url('/rsvp')" size="md">RSVP</UButton>
         </nav>
 
         <div class="flex items-center gap-2 md:hidden">
-          <UButton to="/rsvp" size="md">RSVP</UButton>
+          <UButton :to="url('/rsvp')" size="md">RSVP</UButton>
           <USlideover v-model:open="menuOpen" title="Menu" side="right">
             <UButton
               icon="i-lucide-menu"
@@ -104,9 +105,9 @@ const dateLine = computed(() => (wedding.date ? formatPlainDate(wedding.date) : 
               <nav aria-label="Wedding" class="flex flex-col gap-2">
                 <NuxtLink
                   v-for="link in [
-                    { label: 'Home', to: '/' },
+                    { label: 'Home', to: url('/') },
                     ...links,
-                    { label: 'RSVP', to: '/rsvp' },
+                    { label: 'RSVP', to: url('/rsvp') },
                   ]"
                   :key="link.to"
                   :to="link.to"
@@ -139,6 +140,15 @@ const dateLine = computed(() => (wedding.date ? formatPlainDate(wedding.date) : 
             :href="`mailto:${wedding.rsvp.contactEmail}`"
             class="rounded-sm underline underline-offset-4 hover:text-highlighted focus-visible:ring-2 focus-visible:ring-primary"
             >{{ wedding.rsvp.contactEmail }}</a
+          >
+        </p>
+        <p v-if="wedding.footerLinks?.length" class="flex flex-wrap justify-center gap-4 text-sm">
+          <a
+            v-for="link in wedding.footerLinks"
+            :key="link.url"
+            :href="link.url"
+            class="rounded-sm text-muted underline underline-offset-4 hover:text-highlighted focus-visible:ring-2 focus-visible:ring-primary"
+            >{{ link.label }}</a
           >
         </p>
       </div>
