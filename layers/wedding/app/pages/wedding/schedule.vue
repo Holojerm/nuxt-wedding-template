@@ -2,6 +2,7 @@
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
 
 useSeo({
   title: `Schedule · ${wedding.title}`,
@@ -33,9 +34,9 @@ const events = computed(() => wedding.events.filter((e) => e.isPublic))
       />
     </div>
     <div class="mt-10 flex flex-wrap gap-3">
-      <UButton to="/rsvp" size="lg">RSVP</UButton>
+      <UButton :to="url('/rsvp')" size="lg">RSVP</UButton>
       <UButton
-        to="/wedding.ics"
+        :to="url('/wedding.ics')"
         external
         size="lg"
         color="neutral"

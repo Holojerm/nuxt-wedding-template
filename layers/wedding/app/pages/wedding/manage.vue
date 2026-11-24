@@ -9,6 +9,8 @@ import type { HouseholdView } from '../../../shared/utils/wedding-types'
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
+const signInUrl = useWeddingSignInUrl()
 useSeo({
   title: `Manage · ${wedding.title}`,
   titleMode: 'exact',
@@ -34,7 +36,7 @@ interface ManageData {
   notifyEmails: string[]
 }
 
-const { data, error, refresh } = await useFetch<ManageData>('/api/wedding/manage/households', {
+const { data, error, refresh } = await useFetch<ManageData>(url('/api/wedding/manage/households'), {
   server: false,
 })
 const locked = computed(() => error.value?.statusCode === 401)
@@ -47,7 +49,7 @@ const signingIn = ref(false)
 async function signIn() {
   signingIn.value = true
   try {
-    await $fetch('/api/wedding/manage/session', {
+    await $fetch(url('/api/wedding/manage/session'), {
       method: 'POST',
       body: { token: token.value.trim() },
     })
@@ -60,7 +62,7 @@ async function signIn() {
   }
 }
 async function signOut() {
-  await $fetch('/api/wedding/manage/session', { method: 'DELETE' })
+  await $fetch(url('/api/wedding/manage/session'), { method: 'DELETE' })
   await refresh()
 }
 
@@ -69,7 +71,7 @@ const importing = ref(false)
 async function runImport() {
   importing.value = true
   try {
-    const res = await $fetch<{ created: number }>('/api/wedding/manage/households', {
+    const res = await $fetch<{ created: number }>(url('/api/wedding/manage/households'), {
       method: 'POST',
       body: { text: importText.value },
     })
@@ -85,14 +87,14 @@ async function runImport() {
 
 async function remove(h: HouseholdView) {
   if (!window.confirm(`Delete ${h.label} and their answers? This cannot be undone.`)) return
-  await $fetch(`/api/wedding/manage/households/${h.id}`, { method: 'DELETE' })
+  await $fetch(url(`/api/wedding/manage/households/${h.id}`), { method: 'DELETE' })
   await refresh()
 }
 
 // ── Personal links and QR codes ──────────────────────────────────────────
 type LinkKind = 'rsvp' | 'address'
 const origin = useRequestURL().origin
-const personalLink = (h: HouseholdView, kind: LinkKind) => `${origin}/${kind}?code=${h.inviteCode}`
+const personalLink = (h: HouseholdView, kind: LinkKind) => `${origin}${url(`/${kind}`)}?code=${h.inviteCode}`
 async function copyLink(h: HouseholdView, kind: LinkKind) {
   await navigator.clipboard.writeText(personalLink(h, kind))
   toast.add({
@@ -134,7 +136,7 @@ async function remind() {
     return
   reminding.value = true
   try {
-    const res = await $fetch<{ sent: number; eligible: number }>('/api/wedding/manage/remind', {
+    const res = await $fetch<{ sent: number; eligible: number }>(url('/api/wedding/manage/remind'), {
       method: 'POST',
     })
     toast.add({
@@ -185,6 +187,11 @@ const shortDate = (d: Date | string) =>
     <h1 class="mt-3 text-6xl text-highlighted">Guest list</h1>
 
     <div v-if="!data && !error" class="mt-10 text-muted">Loading…</div>
+
+    <div v-else-if="locked && signInUrl" class="mt-10 flex max-w-md flex-col gap-4">
+      <p class="text-muted">Sign in as the couple to see the guest list.</p>
+      <UButton :to="signInUrl" external size="xl">Sign in</UButton>
+    </div>
 
     <form v-else-if="locked" class="mt-10 flex max-w-md flex-col gap-4" @submit.prevent="signIn">
       <UFormField label="Admin token" hint="From your password manager">
@@ -277,7 +284,7 @@ const shortDate = (d: Date | string) =>
           </p>
           <div class="flex flex-wrap gap-2">
             <UButton
-              to="/qr-sheet?link=address"
+              :to="url('/qr-sheet?link=address')"
               color="neutral"
               variant="outline"
               icon="i-lucide-qr-code"
@@ -285,7 +292,7 @@ const shortDate = (d: Date | string) =>
               Address QR sheet
             </UButton>
             <UButton
-              to="/qr-sheet?link=rsvp"
+              :to="url('/qr-sheet?link=rsvp')"
               color="neutral"
               variant="outline"
               icon="i-lucide-qr-code"
@@ -294,14 +301,14 @@ const shortDate = (d: Date | string) =>
             </UButton>
             <UButton
               v-if="wedding.letters"
-              to="/qr-sheet?link=letters"
+              :to="url('/qr-sheet?link=letters')"
               color="neutral"
               variant="outline"
               icon="i-lucide-mail"
             >
               Letter cards
             </UButton>
-            <UButton to="/labels" color="neutral" variant="outline" icon="i-lucide-tags">
+            <UButton :to="url('/labels')"color="neutral" variant="outline" icon="i-lucide-tags">
               Address labels
             </UButton>
           </div>
@@ -313,7 +320,7 @@ const shortDate = (d: Date | string) =>
           <h2 class="text-4xl text-highlighted">Households ({{ data.households.length }})</h2>
           <div class="flex gap-2">
             <UButton
-              to="/api/wedding/manage/export"
+              :to="url('/api/wedding/manage/export')"
               external
               color="neutral"
               variant="outline"
@@ -321,7 +328,9 @@ const shortDate = (d: Date | string) =>
             >
               Export CSV
             </UButton>
-            <UButton color="neutral" variant="ghost" @click="signOut">Lock</UButton>
+            <UButton v-if="!signInUrl" color="neutral" variant="ghost" @click="signOut"
+              >Lock</UButton
+            >
           </div>
         </div>
         <UInput

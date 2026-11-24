@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
 
   // Awaited, not deferred: one batch call, and a send that silently never
   // happened is worse than a slower button. sendWeddingMail() never throws.
-  const origin = getRequestURL(event).origin
+  const origin = weddingOrigin(event)
   const mails = [
     rsvpConfirmationMail(wedding, household, origin),
     coupleNoticeMail(wedding, household, origin, before?.respondedAt === null),

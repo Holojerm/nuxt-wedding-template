@@ -23,6 +23,9 @@ const TOKEN_A = 'alpha-admin-token-0123456789'
 const TOKEN_B = 'bravo-admin-token-9876543210'
 const HOST_A = 'alpha.example.test'
 const HOST_B = 'bravo.example.test'
+// A host no wedding lists: here the test app plays a host that looks weddings
+// up itself and mounts them under a path (README.md › Shared host).
+const HOST_SHARED = 'shared.example.test'
 
 const { registry } = vi.hoisted(() => ({
   registry: {} as Record<string, unknown>,
@@ -46,9 +49,15 @@ let handle: (request: Request) => Promise<Response>
 
 function call(
   path: string,
-  init: { host: string; method?: string; cookie?: string; body?: unknown },
+  init: {
+    host: string
+    method?: string
+    cookie?: string
+    body?: unknown
+    headers?: Record<string, string>
+  },
 ): Promise<Response> {
-  const headers = new Headers({ host: init.host })
+  const headers = new Headers({ ...init.headers, host: init.host })
   if (init.cookie) headers.set('cookie', init.cookie)
   if (init.body !== undefined) headers.set('content-type', 'application/json')
   return handle(
@@ -93,6 +102,21 @@ beforeAll(async () => {
   router.get(MANAGE, households.default)
   router.post('/api/wedding/manage/session', sessionPost.default)
   router.delete('/api/wedding/manage/session', sessionDelete.default)
+  router.get(
+    '/origin',
+    h3.eventHandler((event) => weddingRequest.weddingOrigin(event)),
+  )
+  app.use(
+    h3.eventHandler((event) => {
+      if (h3.getRequestURL(event).hostname !== HOST_SHARED) return
+      const slug = h3.getHeader(event, 'x-test-wedding')
+      const wedding = slug ? (registry[slug] as WeddingConfig | undefined) : undefined
+      if (!wedding) return
+      event.context.wedding = wedding
+      event.context.weddingBase = `/${slug}`
+      event.context.weddingAdmin = h3.getHeader(event, 'x-test-owner') === '1'
+    }),
+  )
   app.use(router)
   handle = h3.toWebHandler(app)
 })
@@ -249,5 +273,50 @@ describe('manage session', () => {
       method: 'DELETE',
     })
     expect(bad.status).toBe(404)
+  })
+})
+
+describe('a wedding the host set on the request', () => {
+  const shared = (slug: string, owner = false) => ({
+    host: HOST_SHARED,
+    headers: { 'x-test-wedding': slug, ...(owner ? { 'x-test-owner': '1' } : {}) },
+  })
+
+  it('404s on the shared host when the host set none', async () => {
+    expect((await call(MANAGE, { host: HOST_SHARED })).status).toBe(404)
+  })
+
+  it('resolves without a hostname match, and still needs the couple', async () => {
+    expect((await call(MANAGE, shared('alpha'))).status).toBe(401)
+  })
+
+  it('lets the host vouch for the couple, for that wedding only', async () => {
+    for (const [slug, name] of [
+      ['alpha', 'The Lovelaces | Ada Lovelace'],
+      ['bravo', 'The Byrons | Bob Byron'],
+    ] as const) {
+      const { households } = sharedWedding.parseGuestImport(
+        name,
+        (registry[slug] as WeddingConfig).events.map((e) => e.id),
+      )
+      await weddingStore.createHouseholds(db, slug, households)
+    }
+    const res = await call(MANAGE, shared('alpha', true))
+    expect(res.status).toBe(200)
+    const body = JSON.stringify(await res.json())
+    expect(body).toContain('Ada')
+    expect(body).not.toContain('Bob')
+  })
+
+  it('still takes the admin token when the host has not vouched', async () => {
+    const res = await call(MANAGE, { ...shared('alpha'), cookie: adminCookie(TOKEN_A) })
+    expect(res.status).toBe(200)
+  })
+
+  it('puts the mount path in links sent by mail and calendar', async () => {
+    // The test app sees plain http: only the host and path are under test.
+    const address = async (res: Response) => (await res.text()).replace(/^https?:\/\//, '')
+    expect(await address(await call('/origin', shared('alpha')))).toBe(`${HOST_SHARED}/alpha`)
+    expect(await address(await call('/origin', { host: HOST_A }))).toBe(HOST_A)
   })
 })

@@ -6,6 +6,7 @@ import type { InvitationView } from '../../../shared/utils/wedding-types'
 // Built for a grandparent on a phone first. research.md › Key takeaways 3, 7.
 const props = defineProps<{ invitation: InvitationView; contactEmail: string; timeZone: string }>()
 const emit = defineEmits<{ saved: [InvitationView & { emailed?: boolean }] }>()
+const url = useWeddingUrl()
 
 interface GuestDraft {
   id: string
@@ -69,7 +70,7 @@ async function submit() {
   if (error.value) return
   saving.value = true
   try {
-    const saved = await $fetch<InvitationView & { emailed?: boolean }>('/api/wedding/rsvp', {
+    const saved = await $fetch<InvitationView & { emailed?: boolean }>(url('/api/wedding/rsvp'), {
       method: 'POST',
       body: {
         householdId: props.invitation.household.id,

@@ -7,6 +7,7 @@ import type { HouseholdView } from '../../../shared/utils/wedding-types'
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
 useSeo({
   title: `Address labels · ${wedding.title}`,
   titleMode: 'exact',
@@ -15,7 +16,7 @@ useSeo({
 })
 
 const { data, error } = await useFetch<{ households: HouseholdView[] }>(
-  '/api/wedding/manage/households',
+  url('/api/wedding/manage/households'),
   { server: false },
 )
 
@@ -52,7 +53,7 @@ const print = () => window.print()
           <h1 class="mt-2 text-5xl text-highlighted">Address labels</h1>
         </div>
         <div class="flex gap-2">
-          <UButton to="/manage" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
+          <UButton :to="url('/manage')" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
             >Guest list</UButton
           >
           <UButton icon="i-lucide-printer" :disabled="!labels.length" @click="print">Print</UButton>

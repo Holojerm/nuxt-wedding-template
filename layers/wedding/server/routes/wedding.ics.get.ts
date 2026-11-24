@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
       `SUMMARY:${icsText(`${wedding.title}: ${e.name}`)}`,
       `LOCATION:${icsText(`${e.venue}, ${e.address}`)}`,
       ...(e.dress ? [`DESCRIPTION:${icsText(`Dress: ${e.dress}`)}`] : []),
-      `URL:https://${host}/schedule`,
+      `URL:${weddingOrigin(event)}/schedule`,
       'END:VEVENT',
     ]),
     'END:VCALENDAR',

@@ -9,6 +9,7 @@ import type { HouseholdView } from '../../../shared/utils/wedding-types'
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
 useSeo({
   title: `QR sheet · ${wedding.title}`,
   titleMode: 'exact',
@@ -33,11 +34,11 @@ const opens = computed(() =>
     : null,
 )
 const { data, error } = await useFetch<{ households: HouseholdView[] }>(
-  '/api/wedding/manage/households',
+  url('/api/wedding/manage/households'),
   { server: false },
 )
 const origin = useRequestURL().origin
-const link = (h: HouseholdView) => `${origin}/${kind.value}?code=${h.inviteCode}`
+const link = (h: HouseholdView) => `${origin}${url(`/${kind.value}`)}?code=${h.inviteCode}`
 const print = () => window.print()
 </script>
 
@@ -49,7 +50,7 @@ const print = () => window.print()
         <h1 class="mt-2 text-5xl text-highlighted">{{ TITLE[kind] }} QR sheet</h1>
       </div>
       <div class="flex gap-2">
-        <UButton to="/manage" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
+        <UButton :to="url('/manage')" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
           >Guest list</UButton
         >
         <UButton icon="i-lucide-printer" @click="print">Print</UButton>

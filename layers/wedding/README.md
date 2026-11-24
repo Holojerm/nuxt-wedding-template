@@ -62,6 +62,32 @@ QR code, nine cards to a page, and a "Letter cards" button appears on `/manage`.
 prints the address: it never sees a letter. Paste the whole address, including the part after
 the `#`, which the letter service uses to check its own key.
 
+To show the link to guests as well, on the home page and after they reply, set
+`letters.showOnSite: true`. Anyone who can open the site can then write a letter.
+
+## Shared host (optional)
+
+By default a wedding is a file in `weddings/` and its hostname picks it. A host app that keeps
+weddings elsewhere, or serves many under one hostname (`example.com/<slug>`), sets the wedding
+on the request itself, in server middleware that runs before the layer's handlers:
+
+```ts
+event.context.wedding = config          // a WeddingConfig from wherever the host keeps them
+event.context.weddingBase = '/maya-theo' // the path it is mounted under; omit at the root
+event.context.weddingAdmin = true        // only once the host has checked this is the couple
+event.context.weddingSignInUrl = '/login' // where /manage sends a couple who is not signed in
+```
+
+- The pages then mount under `weddingBase`, and every link and request the layer makes carries
+  it (`useWeddingUrl()`). The host must route `<base>/api/wedding/*` and `<base>/wedding.ics` to
+  the layer's handlers, for example by stripping the base from the request path after setting
+  the context.
+- The config is sent to the browser. Leave `adminTokenSha256` empty and `rsvp.notifyEmails`
+  out of what you set, unless guests may see them.
+- With `weddingAdmin` unset, the admin token still works if the config has a hash.
+- Entering a wedding from the host's own pages needs a full page load, not a client-side
+  navigation: the route table is chosen when the app starts.
+
 ## Vendoring into another repo
 
 The layer is self-contained, so an existing Nuxt app can serve wedding sites next to its own

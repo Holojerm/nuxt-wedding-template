@@ -1,12 +1,34 @@
 import { WEDDING_DEV_COOKIE, weddingBySlug, weddingForHost } from '../../shared/utils/wedding'
 import type { WeddingConfig } from '../../shared/utils/wedding-types'
 
+interface MountedWedding {
+  wedding: WeddingConfig
+  base: string
+  signInUrl: string | null
+}
+
+// What a host set on the request (README.md › Shared host), carried to the
+// browser in the payload. Null when the hostname decides, as it does by default.
+function useMountedWedding(): MountedWedding | null {
+  return useState<MountedWedding | null>('wedding-mounted', () => {
+    const context = import.meta.server ? useRequestEvent()?.context : undefined
+    if (!context?.wedding) return null
+    return {
+      wedding: context.wedding,
+      base: context.weddingBase ?? '',
+      signInUrl: context.weddingSignInUrl ?? null,
+    }
+  }).value
+}
+
 /**
- * The wedding this hostname serves, or null on the app's own hosts. In dev,
+ * The wedding this page serves, or null on the app's own pages. In dev,
  * `?wedding=<slug>` pins one through a cookie (`?wedding=` clears it), since
  * the dev proxy cannot answer on a wedding's real subdomain.
  */
 export function useWeddingOrNull(): WeddingConfig | null {
+  const mounted = useMountedWedding()
+  if (mounted) return mounted.wedding
   const url = useRequestURL()
   const fromHost = weddingForHost(url.hostname)
   if (fromHost || !import.meta.dev) return fromHost
@@ -21,6 +43,25 @@ export function useWedding(): WeddingConfig {
   const wedding = useWeddingOrNull()
   if (!wedding) throw createError({ statusCode: 404, message: 'Not found', fatal: true })
   return wedding
+}
+
+/** The path a wedding is mounted under: empty on its own hostname, `/<slug>` on a shared one. */
+export function useWeddingBase(): string {
+  return useMountedWedding()?.base ?? ''
+}
+
+/**
+ * Turns a site path (`/rsvp`, `/api/wedding/lookup`) into one that works where
+ * this wedding is mounted. Every link and request in the layer goes through it.
+ */
+export function useWeddingUrl(): (path: string) => string {
+  const base = useWeddingBase()
+  return (path) => (path === '/' ? base || '/' : `${base}${path}`)
+}
+
+/** Where a host signs the couple in, when it does that itself. */
+export function useWeddingSignInUrl(): string | null {
+  return useMountedWedding()?.signInUrl ?? null
 }
 
 /**

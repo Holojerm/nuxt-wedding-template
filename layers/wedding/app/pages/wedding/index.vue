@@ -5,6 +5,7 @@
 definePageMeta({ layout: 'wedding', colorMode: 'light' })
 
 const wedding = useWedding()
+const url = useWeddingUrl()
 
 useSeo({
   title: wedding.title,
@@ -54,7 +55,7 @@ const nudge =
       </p>
       <WeddingCountdown v-if="wedding.date" :date="wedding.date" :time-zone="wedding.timeZone" />
       <div class="flex flex-wrap justify-center gap-3">
-        <UButton v-if="!closed" to="/rsvp" size="xl">RSVP</UButton>
+        <UButton v-if="!closed" :to="url('/rsvp')" size="xl">RSVP</UButton>
         <UButton
           v-else
           :to="`mailto:${wedding.rsvp.contactEmail}`"
@@ -65,7 +66,7 @@ const nudge =
           RSVPs have closed · Email us
         </UButton>
         <UButton
-          to="/wedding.ics"
+          :to="url('/wedding.ics')"
           external
           size="xl"
           color="neutral"
@@ -112,7 +113,7 @@ const nudge =
             <dd class="mt-2 text-highlighted">
               {{ main.dress }}
               <NuxtLink
-                to="/faq"
+                :to="url('/faq')"
                 class="block rounded-sm text-muted underline underline-offset-4 hover:text-highlighted focus-visible:ring-2 focus-visible:ring-primary"
               >
                 What that means
@@ -125,7 +126,7 @@ const nudge =
               <template v-if="deadline">By {{ deadline }}</template>
               <template v-else>When you can</template>
               <NuxtLink
-                to="/rsvp"
+                :to="url('/rsvp')"
                 class="block rounded-sm text-muted underline underline-offset-4 hover:text-highlighted focus-visible:ring-2 focus-visible:ring-primary"
               >
                 RSVP online
@@ -180,7 +181,7 @@ const nudge =
       </div>
       <div class="mt-8">
         <UButton
-          to="/travel"
+          :to="url('/travel')"
           color="neutral"
           variant="outline"
           trailing-icon="i-lucide-arrow-right"
@@ -188,6 +189,12 @@ const nudge =
           Travel and hotels
         </UButton>
       </div>
+      <WeddingLettersCard
+        v-if="wedding.letters?.showOnSite"
+        class="mt-12"
+        :url="wedding.letters.url"
+        :opens-on="wedding.letters.opensOn"
+      />
     </section>
   </div>
 </template>
